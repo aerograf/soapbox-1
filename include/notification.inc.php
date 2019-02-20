@@ -1,79 +1,80 @@
 <?php
 
+/*
+ You may not change or alter any portion of this comment or credits
+ of supporting developers from this source code or any supporting source code
+ which is considered copyrighted (c) material of the original comment or credit authors.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
 /**
  * Module: Soapbox
- * Version: v 1.5
- * Release Date: 23 August 2004
- * Author: hsalazar
- * Licence: GNU
- * @param        $category
- * @param        $item_id
- * @param  null  $event
- * @return array
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
-// defined('XOOPS_ROOT_PATH') || die('Restricted access');
-function sb_notify_iteminfo($category, $item_id, $event = null)
-{
-    /*
-        global $xoopsModule, $xoopsModuleConfig, $xoopsConfig;
 
-        if ( empty( $xoopsModule ) || $xoopsModule -> getVar( 'dirname' ) != 'soapbox' ) {
-            $moduleHandler = xoops_getHandler( 'module' );
-            $module =  $moduleHandler -> getByDirname( 'soapbox' );
-            $configHandler = xoops_getHandler( 'config' );
-            $config =  $configHandler->getConfigsByCat( 0, $module -> getVar( 'mid' ) );
+use Xmf\Language;
+
+// comment callback functions
+
+/**
+ * @param $category
+ * @param $item_id
+ * @return null
+ */
+function soapbox_notify_iteminfo($category, $item_id)
+{
+        $moduleDirName = basename(dirname(__DIR__));
+
+    if (empty($GLOBALS['xoopsModule']) ||  'soapbox' !== $GLOBALS['xoopsModule']->getVar('dirname')) {
+        /** @var \XoopsModuleHandler $moduleHandler */
+        $moduleHandler = xoops_getHandler('module');
+        $module = $moduleHandler->getByDirname('soapbox');
+        /** @var \XoopsConfigHandler \$configHandler */
+        $configHandler = xoops_getHandler('config');
+        $config = $configHandler->getConfigsByCat(0,$module->getVar('mid'));
         } else {
-            $module =  $xoopsModule;
-            if ( empty( $xoopsModuleConfig ) ) {
-                $configHandler = xoops_getHandler( 'config' );
-                $config =  $configHandler->getConfigsByCat( 0, $module -> getVar( 'mid' ) );
-            } else {
-                $config =  $xoopsModuleConfig;
-            }
+        $module = $GLOBALS['xoopsModule'];
+        $config = $GLOBALS['xoopsModuleConfig'];
         }
-    */
-    //    $moduleDirName = 'soapbox';
-    $pathparts     = explode('/', __DIR__);
-    $moduleDirName = $pathparts[array_search('modules', $pathparts, true) + 1];
-    $item_id       = (int)$item_id;
-    $item          = [];
+
+    Language::load('main', $moduleDirName);
+
     if ('global' === $category) {
         $item['name'] = '';
-        $item['url']  = '';
+        $item['url'] = '';
 
         return $item;
-    }
+        }
 
-    global $xoopsDB;
-
-    if ('column' === $category) {
+    if ('category' === $category) {
         // Assume we have a valid category id
-
-        $sql    = 'SELECT name FROM ' . $xoopsDB->prefix('sbcolumns') . ' WHERE columnID  = ' . $item_id;
-        $result = $xoopsDB->query($sql);
-        if (!$result) {
-            return $item;
-        }
-        $result_array = $xoopsDB->fetchArray($result);
-        $item['name'] = $result_array['name'];
-        $item['url']  = XOOPS_URL . '/modules/' . $moduleDirName . '/column.php?columnID=' . $item_id;
+        $sql = 'SELECT _title FROM ' . $GLOBALS['xoopsDB']->prefix('soapbox_cat') . ' WHERE _cid = '.$item_id;
+        $result = $GLOBALS['xoopsDB']->query($sql); // TODO: error check
+        $resultArrayay = $GLOBALS['xoopsDB']->fetchArray($result);
+        $item['name'] = $resultArrayay['_title'];
+        $item['url'] = XOOPS_URL . '/modules/' . $module->getVar('dirname') . '/cat_view.php?_cid=' . $item_id;
 
         return $item;
-    }
-
-    if ('article' === $category) {
-        // Assume we have a valid story id
-        $sql    = 'SELECT headline FROM ' . $xoopsDB->prefix('sbarticles') . ' WHERE articleID = ' . $item_id;
-        $result = $xoopsDB->query($sql);
-        if (!$result) {
-            return $item;
         }
-        $result_array = $xoopsDB->fetchArray($result);
-        $item['name'] = $result_array['headline'];
-        $item['url']  = XOOPS_URL . '/modules/' . $moduleDirName . '/article.php?articleID=' . $item_id;
+
+    if ('' == $category) {
+        // Assume we have a valid link id
+        $sql = 'SELECT _cid, _title FROM '.$GLOBALS['xoopsDB']->prefix('soapbox_sbarticles') . ' WHERE _lid = ' . $item_id;
+        $result = $GLOBALS['xoopsDB']->query($sql); // TODO: error check
+        $resultArrayay = $GLOBALS['xoopsDB']->fetchArray($result);
+        $item['name'] = $resultArrayay['title'];
+        $item['url'] = XOOPS_URL . '/modules/' . $module->getVar('dirname') . '/soapbox_visit.php?_cid=' . $resultArrayay['_cid'] . '&amp;_lid=' . $item_id;
 
         return $item;
+        }
+        return null;
     }
-
-    return '';
-}

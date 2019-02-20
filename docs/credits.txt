@@ -1,7 +1,6 @@
-Credits
-===============
+CREDITS
+=============
 
-Originally developed by: Horacio Salazar with help from Carnuke, based on XOOPS FAQ by John Neill (Catzwolf).
+Originally created by the XOOPS Development Team.
 
-Converted to XOOPS 2.5.5 by Michael Beck (Mamba)
 

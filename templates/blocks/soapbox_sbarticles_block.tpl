@@ -1,0 +1,54 @@
+<table class="outer">
+    <tr class="head">
+        <th><{$smarty.const.MB_SOAPBOX_ARTICLEID}></th>
+        <th><{$smarty.const.MB_SOAPBOX_COLUMNID}></th>
+        <th><{$smarty.const.MB_SOAPBOX_HEADLINE}></th>
+        <th><{$smarty.const.MB_SOAPBOX_LEAD}></th>
+        <th><{$smarty.const.MB_SOAPBOX_BODYTEXT}></th>
+        <th><{$smarty.const.MB_SOAPBOX_TEASER}></th>
+        <th><{$smarty.const.MB_SOAPBOX_UID}></th>
+        <th><{$smarty.const.MB_SOAPBOX_SUBMIT}></th>
+        <th><{$smarty.const.MB_SOAPBOX_DATESUB}></th>
+        <th><{$smarty.const.MB_SOAPBOX_COUNTER}></th>
+        <th><{$smarty.const.MB_SOAPBOX_WEIGHT}></th>
+        <th><{$smarty.const.MB_SOAPBOX_HTML}></th>
+        <th><{$smarty.const.MB_SOAPBOX_SMILEY}></th>
+        <th><{$smarty.const.MB_SOAPBOX_XCODES}></th>
+        <th><{$smarty.const.MB_SOAPBOX_BREAKS}></th>
+        <th><{$smarty.const.MB_SOAPBOX_BLOCK}></th>
+        <th><{$smarty.const.MB_SOAPBOX_ARTIMAGE}></th>
+        <th><{$smarty.const.MB_SOAPBOX_VOTES}></th>
+        <th><{$smarty.const.MB_SOAPBOX_RATING}></th>
+        <th><{$smarty.const.MB_SOAPBOX_COMMENTABLE}></th>
+        <th><{$smarty.const.MB_SOAPBOX_OFFLINE}></th>
+        <th><{$smarty.const.MB_SOAPBOX_NOTIFYPUB}></th>
+    </tr>
+    <{foreach item=sbarticles from=$block}>
+        <tr class = "<{cycle values = 'even,odd'}>">
+            <td>
+            <{$sbarticles.articleID}>
+            <{$sbarticles.columnID}>
+            <{$sbarticles.headline}>
+            <{$sbarticles.lead}>
+            <{$sbarticles.bodytext}>
+            <{$sbarticles.teaser}>
+            <{$sbarticles.uid}>
+            <{$sbarticles.submit}>
+            <{$sbarticles.datesub}>
+            <{$sbarticles.counter}>
+            <{$sbarticles.weight}>
+            <{$sbarticles.html}>
+            <{$sbarticles.smiley}>
+            <{$sbarticles.xcodes}>
+            <{$sbarticles.breaks}>
+            <{$sbarticles.block}>
+            <{$sbarticles.artimage}>
+            <{$sbarticles.votes}>
+            <{$sbarticles.rating}>
+            <{$sbarticles.commentable}>
+            <{$sbarticles.offline}>
+            <{$sbarticles.notifypub}>
+            </td>
+        </tr>
+    <{/foreach}>
+</table>

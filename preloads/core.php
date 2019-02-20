@@ -1,4 +1,5 @@
-<?php
+<?php 
+
 /*
  You may not change or alter any portion of this comment or credits
  of supporting developers from this source code or any supporting source code
@@ -9,24 +10,30 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 /**
- * @copyright       XOOPS Project (https://xoops.org)
- * @license         GNU GPL 2 (http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
- * @author          XOOPS Project <www.xoops.org> <www.xoops.ir>
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
-defined('XOOPS_ROOT_PATH') || die('Restricted access');
+
+defined('XOOPS_ROOT_PATH') || die('Restricted access.');
 
 /**
  * Class SoapboxCorePreload
  */
-class SoapboxCorePreload extends \XoopsPreloadItem
+class SoapboxCorePreload extends XoopsPreloadItem
 {
     // to add PSR-4 autoloader
-
     /**
      * @param $args
      */
     public static function eventCoreIncludeCommonEnd($args)
     {
-        include __DIR__ . '/autoloader.php';
+        require __DIR__ . '/autoloader.php';
     }
 }

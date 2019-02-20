@@ -1,67 +1,97 @@
 <?php
+
 /*
- * You may not change or alter any portion of this comment or credits
- * of supporting developers from this source code or any supporting source code
- * which is considered copyrighted (c) material of the original comment or credit authors.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ You may not change or alter any portion of this comment or credits
+ of supporting developers from this source code or any supporting source code
+ which is considered copyrighted (c) material of the original comment or credit authors.
 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
 /**
- * @copyright    XOOPS Project https://xoops.org/
- * @license      GNU GPL 2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
- * @package
- * @since
- * @author       XOOPS Development Team
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
-
 use XoopsModules\Soapbox;
+require dirname(__DIR__) . '/preloads/autoloader.php';
 
-include dirname(__DIR__) . '/preloads/autoloader.php';
 
-$moduleDirName      = basename(dirname(__DIR__));
-$moduleDirNameUpper = mb_strtoupper($moduleDirName); //$capsDirName
+$moduleDirName = basename(dirname(__DIR__));
+$moduleDirNameUpper = strtoupper($moduleDirName);
+
 
 /** @var \XoopsDatabase $db */
-/** @var \XoopsModules\Soapbox\Helper $helper */
+/** @var   \XoopsModules\Soapbox\Helper $helper */
 /** @var \XoopsModules\Soapbox\Utility $utility */
-$db      = \XoopsDatabaseFactory::getDatabaseConnection();
-$debug   = false;
-$helper  = \XoopsModules\Soapbox\Helper::getInstance($debug);
+
+$db     = \XoopsDatabaseFactory::getDatabaseConnection();
+$helper = \XoopsModules\Soapbox\Helper::getInstance();
 $utility = new \XoopsModules\Soapbox\Utility();
 //$configurator = new \XoopsModules\Soapbox\Common\Configurator();
 
 $helper->loadLanguage('common');
 
-//handlers
-//$categoryHandler     = new Soapbox\CategoryHandler($db);
-//$downloadHandler     = new Soapbox\DownloadHandler($db);
+//handlers/** @var \XoopsPersistableObjectHandler $sbcolumnsHandler */
+$sbcolumnsHandler  = $helper->getHandler('Sbcolumns'); 
+/** @var \XoopsPersistableObjectHandler $sbarticlesHandler */
+$sbarticlesHandler  = $helper->getHandler('Sbarticles'); 
+/** @var \XoopsPersistableObjectHandler $sbvotedataHandler */
+$sbvotedataHandler  = $helper->getHandler('Sbvotedata'); 
 
-$pathIcon16 = \Xmf\Module\Admin::iconUrl('', 16);
-$pathIcon32 = \Xmf\Module\Admin::iconUrl('', 32);
-if (is_object($helper->getModule())) {
-    $pathModIcon16 = $helper->getModule()->getInfo('modicons16');
-    $pathModIcon32 = $helper->getModule()->getInfo('modicons32');
-}
+$pathIcon16    = Xmf\Module\Admin::iconUrl('', 16);
+$pathIcon32    = Xmf\Module\Admin::iconUrl('', 32);
+//$pathModIcon16 = $helper->getModule()->getInfo('modicons16');
+//$pathModIcon32 = $helper->getModule()->getInfo('modicons32');
+
 
 if (!defined($moduleDirNameUpper . '_CONSTANTS_DEFINED')) {
     define($moduleDirNameUpper . '_DIRNAME', basename(dirname(__DIR__)));
-    define($moduleDirNameUpper . '_ROOT_PATH', XOOPS_ROOT_PATH . '/modules/' . $moduleDirName . '/');
-    define($moduleDirNameUpper . '_PATH', XOOPS_ROOT_PATH . '/modules/' . $moduleDirName . '/');
-    define($moduleDirNameUpper . '_URL', XOOPS_URL . '/modules/' . $moduleDirName . '/');
-    define($moduleDirNameUpper . '_IMAGE_URL', constant($moduleDirNameUpper . '_URL') . '/assets/images/');
-    define($moduleDirNameUpper . '_IMAGE_PATH', constant($moduleDirNameUpper . '_ROOT_PATH') . '/assets/images');
+    define($moduleDirNameUpper . '_ROOT_PATH', XOOPS_ROOT_PATH . '/modules/' . $moduleDirName );
+    define($moduleDirNameUpper . '_PATH', XOOPS_ROOT_PATH . '/modules/' . $moduleDirName );
+    define($moduleDirNameUpper . '_URL', XOOPS_URL . '/modules/' . $moduleDirName );
+    define($moduleDirNameUpper . '_IMAGES_URL', constant($moduleDirNameUpper . '_URL') . '/assets/images/');
+    define($moduleDirNameUpper . '_IMAGES_PATH', constant($moduleDirNameUpper . '_ROOT_PATH') . '/assets/images/');
     define($moduleDirNameUpper . '_ADMIN_URL', constant($moduleDirNameUpper . '_URL') . '/admin/');
     define($moduleDirNameUpper . '_ADMIN_PATH', constant($moduleDirNameUpper . '_ROOT_PATH') . '/admin/');
     define($moduleDirNameUpper . '_ADMIN', constant($moduleDirNameUpper . '_URL') . '/admin/index.php');
-    //    define($moduleDirNameUpper . '_AUTHOR_LOGOIMG', constant($moduleDirNameUpper . '_URL') . '/assets/images/logoModule.png');
+//    define($moduleDirNameUpper . '_AUTHOR_LOGOIMG', constant($moduleDirNameUpper . '_URL') . '/assets/images/logoModule.png');
     define($moduleDirNameUpper . '_UPLOAD_URL', XOOPS_UPLOAD_URL . '/' . $moduleDirName); // WITHOUT Trailing slash
     define($moduleDirNameUpper . '_UPLOAD_PATH', XOOPS_UPLOAD_PATH . '/' . $moduleDirName); // WITHOUT Trailing slash
+    define($moduleDirNameUpper . '_CAT_IMAGES_URL', XOOPS_UPLOAD_URL . ' / ' . constant($moduleDirNameUpper . '_DIRNAME') . '/images/category');
+    define($moduleDirNameUpper . '_CAT_IMAGES_PATH', XOOPS_UPLOAD_PATH . '/' . constant($moduleDirNameUpper . '_DIRNAME') . ' / images / category');
+    define($moduleDirNameUpper . '_CACHE_PATH', XOOPS_UPLOAD_PATH . '/' . $moduleDirName . '/');
     define($moduleDirNameUpper . '_AUTHOR_LOGOIMG', $pathIcon32 . '/xoopsmicrobutton.gif');
     define($moduleDirNameUpper . '_CONSTANTS_DEFINED', 1);
 }
+
+
+//define option du module
+//define($moduleDirNameUpper. '_DISPLAY_CAT', $helper->getConfig('$mod_name_cat_display', 'none'));
+
+//require __DIR__ . '/../include/seo_functions.php';
+//require __DIR__ . '/../class/PageNav.php';
+
+//require XOOPS_ROOT_PATH . '/class/tree.php';
+
+//require __DIR__ . '/../class/Tree.php';
+//require __DIR__ . '/../class/FormSelect.php';
+
+// Load only if module is installed
+//if (is_object($helper->getModule())) {
+//    // Find if the user is admin of the module
+//    $publisherIsAdmin = publisher\Utility::userIsAdmin();
+//    // get current page
+//    $publisherCurrentPage = publisher\Utility::getCurrentPage();
+//}
+
 
 $icons = [
     'edit'    => "<img src='" . $pathIcon16 . "/edit.png'  alt=" . _EDIT . "' align='middle'>",
@@ -91,6 +121,6 @@ if (is_object($helper->getModule())) {
     $pathModIcon16 = $helper->getModule()->getInfo('modicons16');
     $pathModIcon32 = $helper->getModule()->getInfo('modicons32');
 
-    $GLOBALS['xoopsTpl']->assign('pathModIcon16', XOOPS_URL . '/modules/' . $moduleDirName . '/' . $pathModIcon16);
-    $GLOBALS['xoopsTpl']->assign('pathModIcon32', $pathModIcon32);
+$GLOBALS['xoopsTpl']->assign('pathModIcon16', XOOPS_URL . '/modules/' . $moduleDirName . '/' . $pathModIcon16);
+$GLOBALS['xoopsTpl']->assign('pathModIcon32', $pathModIcon32);
 }

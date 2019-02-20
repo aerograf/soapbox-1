@@ -1,27 +1,25 @@
-<?php
-
-namespace XoopsModules\Soapbox;
+<?php namespace XoopsModules\Soapbox;
 
 /*
- * You may not change or alter any portion of this comment or credits
- * of supporting developers from this source code or any supporting source code
- * which is considered copyrighted (c) material of the original comment or credit authors.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ You may not change or alter any portion of this comment or credits
+ of supporting developers from this source code or any supporting source code
+ which is considered copyrighted (c) material of the original comment or credit authors.
 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
 /**
- * @copyright    XOOPS Project https://xoops.org/
- * @license      GNU GPL 2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
- * @package
- * @since
- * @author       XOOPS Development Team
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
-
-//defined('XOOPS_ROOT_PATH') || die('Restricted access');
-
 /**
  * Class Helper
  */
@@ -30,7 +28,8 @@ class Helper extends \Xmf\Module\Helper
     public $debug;
 
     /**
-     * @internal param $debug
+     * Constructor
+     *
      * @param bool $debug
      */
     public function __construct($debug = false)
@@ -42,7 +41,6 @@ class Helper extends \Xmf\Module\Helper
 
     /**
      * @param bool $debug
-     *
      * @return \XoopsModules\Soapbox\Helper
      */
     public static function getInstance($debug = false)
@@ -51,7 +49,6 @@ class Helper extends \Xmf\Module\Helper
         if (null === $instance) {
             $instance = new static($debug);
         }
-
         return $instance;
     }
 
@@ -63,7 +60,7 @@ class Helper extends \Xmf\Module\Helper
         return $this->dirname;
     }
 
-    /**
+     /**
      * Get an Object Handler
      *
      * @param string $name name of handler to load
@@ -73,10 +70,15 @@ class Helper extends \Xmf\Module\Helper
     public function getHandler($name)
     {
         $ret   = false;
-        $db    = \XoopsDatabaseFactory::getDatabaseConnection();
-        $class = '\\XoopsModules\\' . ucfirst(mb_strtolower(basename(dirname(__DIR__)))) . '\\' . $name . 'Handler';
-        $ret   = new $class($db);
-
+        $class = '\\XoopsModules\\' . ucfirst(strtolower(basename(dirname(__DIR__)))) . '\\' . $name . 'Handler';
+//         if (!class_exists($class)) {        
+            /** @var \XoopsMySQLDatabase $db */
+            $db    = \XoopsDatabaseFactory::getDatabaseConnection();
+            $helper = self::getInstance();
+            $ret   = new $class($db, $helper);
+//        }
+        // $this->addLog("Getting handler '{$name}'");
         return $ret;
     }
+
 }

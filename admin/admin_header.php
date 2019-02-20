@@ -1,60 +1,70 @@
 <?php
+
+/*
+ You may not change or alter any portion of this comment or credits
+ of supporting developers from this source code or any supporting source code
+ which is considered copyrighted (c) material of the original comment or credit authors.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
 /**
- * ****************************************************************************
+ * Module: Soapbox
  *
- * You may not change or alter any portion of this comment or credits
- * of supporting developers from this source code or any supporting source code
- * which is considered copyrighted (c) material of the original comment or credit authors.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * @copyright         XOOPS Project
- * @license           http://www.gnu.org/licenses/gpl-2.0.html GNU Public License
- * @package
- * @author            XOOPS Development Team
- *
- * ****************************************************************************
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
 
+use Xmf\Request;
 use XoopsModules\Soapbox;
 
-require_once dirname(dirname(dirname(__DIR__))) . '/include/cp_header.php';
-include dirname(__DIR__) . '/preloads/autoloader.php';
 
-require_once $GLOBALS['xoops']->path('www/class/xoopsformloader.php');
 
-require_once dirname(__DIR__) . '/include/common.php';
+require  dirname(dirname(dirname(__DIR__))) . '/include/cp_header.php';
+require  dirname(dirname(dirname(__DIR__))) . '/class/xoopsformloader.php';
+
+require  dirname(__DIR__) . '/include/common.php';
+
+
+require dirname(__DIR__) . '/preloads/autoloader.php';
 
 $moduleDirName = basename(dirname(__DIR__));
 
-//require_once $GLOBALS['xoops']->path('www/kernel/module.php');
-//require_once $GLOBALS['xoops']->path('www/class/xoopstree.php');
-//require_once $GLOBALS['xoops']->path('www/class/xoopslists.php');
-
 /** @var \XoopsModules\Soapbox\Helper $helper */
-$helper      = \XoopsModules\Soapbox\Helper::getInstance();
+$helper = \XoopsModules\Soapbox\Helper::getInstance();
+/** @var Xmf\Module\Admin $adminObject */
 $adminObject = \Xmf\Module\Admin::getInstance();
 
-//$pathIcon16    = \Xmf\Module\Admin::iconUrl('', 16);
-//$pathIcon32    = \Xmf\Module\Admin::iconUrl('', 32);
-//$pathModIcon32 = $helper->getModule()->getInfo('modicons32');
+
+$db      = \XoopsDatabaseFactory::getDatabaseConnection();
+
+$pathIcon16      = \Xmf\Module\Admin::iconUrl('', 16);
+$pathIcon32      = \Xmf\Module\Admin::iconUrl('', 32);
+$pathModIcon32 = $helper->getModule()->getInfo('modicons32');
+
+/** @var \XoopsPersistableObjectHandler $sbcolumnsHandler */
+$sbcolumnsHandler  = $helper->getHandler('Sbcolumns'); 
+/** @var \XoopsPersistableObjectHandler $sbarticlesHandler */
+$sbarticlesHandler  = $helper->getHandler('Sbarticles'); 
+/** @var \XoopsPersistableObjectHandler $sbvotedataHandler */
+$sbvotedataHandler  = $helper->getHandler('Sbvotedata'); 
+
+
+$myts = \MyTextSanitizer::getInstance();
+if (!isset($xoopsTpl) || !is_object($xoopsTpl)) {
+    require XOOPS_ROOT_PATH . '/class/template.php';
+    $xoopsTpl = new \XoopsTpl();
+}
 
 // Load language files
 $helper->loadLanguage('admin');
 $helper->loadLanguage('modinfo');
-$helper->loadLanguage('main');
+$helper->loadLanguage('common');
 
-//$myts = \MyTextSanitizer::getInstance();
-//
-//if (!isset($GLOBALS['xoopsTpl']) || !($GLOBALS['xoopsTpl'] instanceof XoopsTpl)) {
-//    require_once $GLOBALS['xoops']->path('class/template.php');
-//    $xoopsTpl = new \XoopsTpl();
-//}
-
-//if (!isset($GLOBALS['xoTheme']) || !is_object($GLOBALS['xoTheme'])) {
-//    require $GLOBALS['xoops']->path('class/theme.php');
-//    $GLOBALS['xoTheme'] = new \xos_opal_Theme();
-//}
-
-$sbColumnHandler = new Soapbox\ColumnsHandler();
+//xoops_cp_header();
