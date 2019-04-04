@@ -1,7 +1,25 @@
-<?php
+<?php namespace XoopsModules\Soapbox\Common;
 
-namespace XoopsModules\Soapbox\Common;
+/*
+ You may not change or alter any portion of this comment or credits
+ of supporting developers from this source code or any supporting source code
+ which is considered copyrighted (c) material of the original comment or credit authors.
 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+/**
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
+ */
 /*
  You may not change or alter any portion of this comment or credits
  of supporting developers from this source code or any supporting source code
@@ -13,14 +31,13 @@ namespace XoopsModules\Soapbox\Common;
 */
 
 /**
- * feedback plugin for xoops modules
+ * Feedback plugin for xoops modules
  *
- * @copyright      module for xoops
- * @license        GPL 2.0 or later
- * @package        general
- * @since          1.0
- * @min_xoops      2.5.9
- * @author         XOOPS - Website:<https://xoops.org>
+ * @copyright      XOOPS Project  (https://xoops.org)
+ * @license        GNU GPL 2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
+ * @author         Michael Beck <mambax7@gmailc.com>
+ * @author         Wedega - Email:<webmaster@wedega.com>
+ * @author         Fernando Santos (topet05) <fernando@mastop.com.br>
  */
 
 defined('XOOPS_ROOT_PATH') || die('Restricted access');
@@ -62,11 +79,11 @@ class ModuleFeedback extends \XoopsObject
      * @public function getFormFeedback:
      * provide form for sending a feedback to module author
      * @param bool $action
-     * @return \XoopsThemeForm
+     * @return XoopsThemeForm
      */
     public function getFormFeedback($action = false)
     {
-        if (!$action) {
+        if (false === $action) {
             $action = $_SERVER['REQUEST_URI'];
         }
         $moduleDirName      = basename(dirname(dirname(__DIR__)));
@@ -98,7 +115,7 @@ class ModuleFeedback extends \XoopsObject
         $fbtypeSelect->addOption(constant('CO_' . $moduleDirNameUpper . '_' . 'FB_TYPE_OTHERS'), constant('CO_' . $moduleDirNameUpper . '_' . 'FB_TYPE_OTHERS'));
         $form->addElement($fbtypeSelect, true);
 
-        $editorConfigs           = [];
+        $editorConfigs           = array();
         $editorConfigs['name']   = 'fb_content';
         $editorConfigs['value']  = $this->content;
         $editorConfigs['rows']   = 5;
@@ -119,3 +136,4 @@ class ModuleFeedback extends \XoopsObject
         return $form;
     }
 }
+

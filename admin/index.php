@@ -1,90 +1,69 @@
 <?php
 
+/*
+ You may not change or alter any portion of this comment or credits
+ of supporting developers from this source code or any supporting source code
+ which is considered copyrighted (c) material of the original comment or credit authors.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+/**
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
+ */
+
+
+use Xmf\Request;
 use XoopsModules\Soapbox;
+use XoopsModules\Soapbox\Common;
 
-require_once __DIR__ . '/admin_header.php';
-
+require __DIR__ . '/admin_header.php';
 xoops_cp_header();
-
 $adminObject = \Xmf\Module\Admin::getInstance();
+//count "total Sbcolumns"
+/** @var \XoopsPersistableObjectHandler $sbcolumnsHandler */
+$totalSbcolumns = $sbcolumnsHandler->getCount();
+//count "total Sbarticles"
+/** @var \XoopsPersistableObjectHandler $sbarticlesHandler */
+$totalSbarticles = $sbarticlesHandler->getCount();
+//count "total Sbvotedata"
+/** @var \XoopsPersistableObjectHandler $sbvotedataHandler */
+$totalSbvotedata = $sbvotedataHandler->getCount();
+// InfoBox Statistics
+$adminObject->addInfoBox(AM_SOAPBOX_STATISTICS);
 
-/** @var Soapbox\Utility $utility */
-$utility = new Soapbox\Utility();
+// InfoBox sbcolumns
+$adminObject->addInfoBoxLine(sprintf(AM_SOAPBOX_THEREARE_COLUMN, $totalSbcolumns));
 
-//get category count
-//----------------------------
-/** @var \XoopsModules\Soapbox\EntrydataHandler $entrydataHandler */
-$entrydataHandler = new \XoopsModules\Soapbox\EntrydataHandler();
-$totcol           = $entrydataHandler->getColumnCount();
-//----------------------------
-$criteria = new \CriteriaCompo();
-$criteria->add(new \Criteria('submit', 0));
-$criteria->add(new \Criteria('offline', 0));
-$totpub = $entrydataHandler->getArticleCount($criteria);
-unset($criteria);
-//----------------------------
-$criteria = new \CriteriaCompo();
-$criteria->add(new \Criteria('submit', 0));
-$criteria->add(new \Criteria('offline', 1));
-$totoff = $entrydataHandler->getArticleCount($criteria);
-unset($criteria);
-//----------------------------
-$criteria = new \CriteriaCompo();
-$criteria->add(new \Criteria('submit', 1));
-$totsub = $entrydataHandler->getArticleCount($criteria);
-unset($criteria);
-//----------------------------
-$criteria = new \CriteriaCompo();
-$criteria->add(new \Criteria('submit', 0));
-$totall = $entrydataHandler->getArticleCount($criteria);
-unset($criteria);
+// InfoBox sbarticles
+$adminObject->addInfoBoxLine(sprintf(AM_SOAPBOX_THEREARE_ARTICLE, $totalSbarticles));
 
-$adminObject->addInfoBox(_AM_SOAPBOX_MODCONTENT);
-if ($totcol > 0) {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . '<a href="main.php">' . _AM_SOAPBOX_TOTCOL . '</a>' . '</infolabel>', '<span class="green">' . $totcol . '</span>'), '', 'green');
-} else {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . _AM_SOAPBOX_TOTCOL . '</infolabel>', '<span class="green">' . $totcol . '</span>'), '', 'Green');
-}
-if ($totpub > 0) {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . '<a href="main.php">' . _AM_SOAPBOX_TOTART . '</a>' . '</infolabel>', '<span class="green">' . $totpub . '</span>'), '', 'green');
-} else {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . _AM_SOAPBOX_TOTART . '</infolabel>', '<span class="green">' . $totpub . '</span>'), '', 'green');
-}
-if ($totoff > 0) {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . '<a href="main.php">' . _AM_SOAPBOX_TOTOFF . '</a>' . '</infolabel>', '<span class="red">' . $totoff . '</span>'), '', 'red');
-} else {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . _AM_SOAPBOX_TOTOFF . '</infolabel>', '<span class="green">' . $totoff . '</span>'), '', 'green');
-}
-if ($totall > 0) {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . '<a href="main.php">' . _AM_SOAPBOX_TOTSUB . '</a>' . '</infolabel>', '<span class="green">' . $totall . '</span>'), '', 'green');
-} else {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . _AM_SOAPBOX_TOTSUB . '</infolabel>', '<span class="green">' . $totall . '</span>'), '', 'green');
-}
-
-if ($totsub > 0) {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . '<a href="submissions.php">' . _AM_SOAPBOX_NEED_APPROVAL . '</a>' . '</infolabel>', '<span class="green">' . $totsub . '</span>'), '', 'red');
-} else {
-    $adminObject->addInfoBoxLine(sprintf('<infolabel>' . _AM_SOAPBOX_NEED_APPROVAL . '</infolabel>', '<span class="green">' . $totsub . '</span>'), '', 'green');
-}
+// InfoBox sbvotedata
+$adminObject->addInfoBoxLine(sprintf(AM_SOAPBOX_THEREARE_VOTES, $totalSbvotedata));
+// Render Index
 $adminObject->displayNavigation(basename(__FILE__));
 
-//check for latest release
-$newRelease = $utility::checkVerModule($helper);
-if (!empty($newRelease)) {
-    $adminObject->addItemButton($newRelease[0], $newRelease[1], 'download', 'style="color : Red"');
-}
 
-//------------- Test Data ----------------------------
+ //------------- Test Data ----------------------------
 
 if ($helper->getConfig('displaySampleButton')) {
     xoops_loadLanguage('admin/modulesadmin', 'system');
-    require_once dirname(__DIR__) . '/testdata/index.php';
+    require __DIR__ . '/../testdata/index.php';
 
     $adminObject->addItemButton(constant('CO_' . $moduleDirNameUpper . '_' . 'ADD_SAMPLEDATA'), '__DIR__ . /../../testdata/index.php?op=load', 'add');
 
     $adminObject->addItemButton(constant('CO_' . $moduleDirNameUpper . '_' . 'SAVE_SAMPLEDATA'), '__DIR__ . /../../testdata/index.php?op=save', 'add');
 
-    //    $adminObject->addItemButton(constant('CO_' . $moduleDirNameUpper . '_' . 'EXPORT_SCHEMA'), '__DIR__ . /../../testdata/index.php?op=exportschema', 'add');
+//    $adminObject->addItemButton(constant('CO_' . $moduleDirNameUpper . '_' . 'EXPORT_SCHEMA'), '__DIR__ . /../../testdata/index.php?op=exportschema', 'add');
 
     $adminObject->displayButton('left', '');
 }
@@ -95,4 +74,5 @@ $adminObject->displayIndex();
 
 echo $utility::getServerStats();
 
-require_once __DIR__ . '/admin_footer.php';
+//codeDump(__FILE__);
+require __DIR__ . '/admin_footer.php';

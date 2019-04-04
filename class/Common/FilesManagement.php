@@ -1,6 +1,4 @@
-<?php
-
-namespace XoopsModules\Soapbox\Common;
+<?php namespace XoopsModules\Soapbox\Common;
 
 /*
  You may not change or alter any portion of this comment or credits
@@ -10,12 +8,17 @@ namespace XoopsModules\Soapbox\Common;
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
-
+*/
 /**
- * @copyright   XOOPS Project (https://xoops.org)
- * @license     http://www.fsf.org/copyleft/gpl.html GNU public license
- * @author      mamba <mambax7@gmail.com>
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
 trait FilesManagement
 {
@@ -23,12 +26,15 @@ trait FilesManagement
      * Function responsible for checking if a directory exists, we can also write in and create an index.html file
      *
      * @param string $folder The full path of the directory to check
+     *
+     * @return void
+     * @throws \RuntimeException
      */
     public static function createFolder($folder)
     {
         try {
             if (!file_exists($folder)) {
-                if (!is_dir($folder) && !mkdir($folder) && !is_dir($folder)) {
+                if (!mkdir($folder) && !is_dir($folder)) {
                     throw new \RuntimeException(sprintf('Unable to create the %s directory', $folder));
                 }
 
@@ -36,7 +42,7 @@ trait FilesManagement
             }
         }
         catch (\Exception $e) {
-            echo 'Caught exception: ', $e->getMessage(), "\n", '<br>';
+            echo 'Caught exception: ', $e->getMessage(), '<br>';
         }
     }
 
@@ -57,23 +63,67 @@ trait FilesManagement
     public static function recurseCopy($src, $dst)
     {
         $dir = opendir($src);
-        //        @mkdir($dst);
-        if (!@mkdir($dst) && !is_dir($dst)) {
-            throw new \RuntimeException('The directory ' . $dst . ' could not be created.');
-        }
-        while (false !== ($file = readdir($dir))) {
-            if (('.' !== $file) && ('..' !== $file)) {
-                if (is_dir($src . '/' . $file)) {
-                    self::recurseCopy($src . '/' . $file, $dst . '/' . $file);
-                } else {
-                    copy($src . '/' . $file, $dst . '/' . $file);
+           //     @mkdir($dst);
+            while (false !== ($file = readdir($dir))) {
+                if (('.' !== $file) && ('..' !== $file)) {
+                    if (is_dir($src . '/' . $file)) {
+                        self::recurseCopy($src . '/' . $file, $dst . '/' . $file);
+                    } else {
+                        copy($src . '/' . $file, $dst . '/' . $file);
+                    }
                 }
             }
-        }
         closedir($dir);
     }
 
     /**
+     * Copy a file, or recursively copy a folder and its contents
+     * @author      Aidan Lister <aidan@php.net>
+     * @version     1.0.1
+     * @link        http://aidanlister.com/2004/04/recursively-copying-directories-in-php/
+     * @param       string   $source    Source path
+     * @param       string   $dest      Destination path
+     * @return      bool     Returns true on success, false on failure
+     */
+    public static function xcopy($source, $dest)
+    {
+        // Check for symlinks
+        if (is_link($source)) {
+            return symlink(readlink($source), $dest);
+        }
+
+        // Simple copy for a file
+        if (is_file($source)) {
+            return copy($source, $dest);
+        }
+
+        // Make destination directory
+        if (!is_dir($dest)) {
+            if (!mkdir($dest) && !is_dir($dest)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $dest));
+            }
+        }
+
+        if (@is_dir($source)) {
+        // Loop through the folder
+        $dir = dir($source);
+            while (false !== $entry = $dir->read()) {
+                // Skip pointers
+                if ('.' === $entry || '..' === $entry) {
+                    continue;
+                }
+                // Deep copy directories
+                self::xcopy("$source/$entry", "$dest/$entry");
+            }
+            // Clean up
+            $dir->close();
+        }
+        return true;
+      }
+
+
+    /**
+     *
      * Remove files and (sub)directories
      *
      * @param string $src source directory to delete
@@ -118,11 +168,11 @@ trait FilesManagement
             // input is not a valid directory
             $success = false;
         }
-
         return $success;
     }
 
     /**
+     *
      * Recursively remove directory
      *
      * @todo currently won't remove directories with hidden files, should it?
@@ -184,9 +234,11 @@ trait FilesManagement
         }
 
         // If the destination directory does not exist and could not be created stop processing
-        if (!is_dir($dest) && !mkdir($dest) && !is_dir($dest)) {
+        if (!is_dir($dest) && !mkdir($dest, 0755) && !is_dir($dest)) {
             return false;
         }
+
+
 
         // Open the source directory to read in files
         $iterator = new \DirectoryIterator($src);
@@ -227,7 +279,7 @@ trait FilesManagement
         }
 
         // If the destination directory does not exist and could not be created stop processing
-        if (!is_dir($dest) && !mkdir($dest) && !is_dir($dest)) {
+        if (!is_dir($dest) && !mkdir($dest, 0755) && !is_dir($dest)) {
             return false;
         }
 
@@ -240,7 +292,6 @@ trait FilesManagement
                 self::rcopy($fObj->getPathname(), "{$dest}/" . $fObj->getFilename());
             }
         }
-
         return true;
     }
 }

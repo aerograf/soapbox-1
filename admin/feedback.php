@@ -1,4 +1,5 @@
 <?php
+
 /*
  You may not change or alter any portion of this comment or credits
  of supporting developers from this source code or any supporting source code
@@ -8,29 +9,30 @@
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
-
 /**
- * feedback plugin for xoops modules
+ * Module: Soapbox
  *
- * @copyright      module for xoops
- * @license        GPL 2.0 or later
- * @package        general
- * @since          1.0
- * @min_xoops      2.5.9
- * @author         XOOPS - Website:<https://xoops.org>
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
-
 use Xmf\Request;
+use XoopsModules\Soapbox;
+use XoopsModules\Soapbox\Common;
 
-require __DIR__ . '/admin_header.php';
+include __DIR__ . '/admin_header.php';
 
 $adminObject = \Xmf\Module\Admin::getInstance();
 
 $feedback = new \XoopsModules\Soapbox\Common\ModuleFeedback;
 
 // It recovered the value of argument op in URL$
-$op                 = Request::getString('op', 'list');
-$moduleDirName      = $GLOBALS['xoopsModule']->getVar('dirname');
+$op            = Request::getString('op', 'list');
+$moduleDirName = $GLOBALS['xoopsModule']->getVar('dirname');
 $moduleDirNameUpper = mb_strtoupper($moduleDirName);
 xoops_loadLanguage('feedback', $moduleDirName);
 
@@ -60,7 +62,9 @@ switch ($op) {
         $your_mail  = Request::getString('your_mail', '');
         $fb_type    = Request::getString('fb_type', '');
         $fb_content = Request::getText('fb_content', '');
-        $fb_content = str_replace(["\r\n", "\n", "\r"], '<br>', $fb_content); //clean line break from dhtmltextarea
+        $fb_content = str_replace(array("
+", "
+", ""), '<br>', $fb_content); //clean line break from dhtmltextarea
 
         $title       = constant('CO_' . $moduleDirNameUpper . '_' . 'FB_SEND_FOR') . $GLOBALS['xoopsModule']->getVar('dirname');
         $body        = constant('CO_' . $moduleDirNameUpper . '_' . 'FB_NAME') . ': ' . $your_name . '<br>';

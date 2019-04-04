@@ -1,6 +1,4 @@
-<?php
-
-namespace XoopsModules\Soapbox\Common;
+<?php namespace XoopsModules\Soapbox\Common;
 
 /*
  You may not change or alter any portion of this comment or credits
@@ -10,8 +8,18 @@ namespace XoopsModules\Soapbox\Common;
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+/**
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
-
 /**
  * Class Migrate synchronize existing tables with target schema
  *
@@ -31,10 +39,9 @@ class Migrate extends \Xmf\Database\Migrate
      * @throws \InvalidArgumentException
      */
     public function __construct()
-    {
-        require_once dirname(dirname(__DIR__)) . '/include/config.php';
-        $config             = getConfig();
-        $this->renameTables = $config->renameTables;
+    {   require_once  dirname(dirname(__DIR__)) . '/include/config.php';
+        $config = getConfig();
+        $this->renameTables            = $config->renameTables;
 
         $moduleDirName = basename(dirname(dirname(__DIR__)));
         parent::__construct($moduleDirName);
@@ -46,7 +53,7 @@ class Migrate extends \Xmf\Database\Migrate
     private function changePrefix()
     {
         foreach ($this->renameTables as $oldName => $newName) {
-            if ($this->tableHandler->useTable($oldName) && !$this->tableHandler->useTable($newName)) {
+            if ($this->tableHandler->useTable($oldName)) {
                 $this->tableHandler->renameTable($oldName, $newName);
             }
         }
@@ -57,13 +64,15 @@ class Migrate extends \Xmf\Database\Migrate
      *
      * @param string $tableName  table to convert
      * @param string $columnName column with IP address
+     *
+     * @return void
      */
     private function convertIPAddresses($tableName, $columnName)
     {
         if ($this->tableHandler->useTable($tableName)) {
             $attributes = $this->tableHandler->getColumnAttributes($tableName, $columnName);
-            if (false !== mb_strpos($attributes, ' int(')) {
-                if (false === mb_strpos($attributes, 'unsigned')) {
+            if (false !== strpos($attributes, ' int(')) {
+                if (false === strpos($attributes, 'unsigned')) {
                     $this->tableHandler->alterColumn($tableName, $columnName, " bigint(16) NOT NULL  DEFAULT '0' ");
                     $this->tableHandler->update($tableName, [$columnName => "4294967296 + $columnName"], "WHERE $columnName < 0", false);
                 }
@@ -75,19 +84,23 @@ class Migrate extends \Xmf\Database\Migrate
 
     /**
      * Move do* columns from newbb_posts to newbb_posts_text table
+     *
+     * @return void
      */
     private function moveDoColumns()
     {
         $tableName    = 'newbb_posts_text';
         $srcTableName = 'newbb_posts';
-        if ($this->tableHandler->useTable($tableName)
-            && $this->tableHandler->useTable($srcTableName)) {
+        if (false !== $this->tableHandler->useTable($tableName)
+            && false !== $this->tableHandler->useTable($srcTableName)) {
             $attributes = $this->tableHandler->getColumnAttributes($tableName, 'dohtml');
             if (false === $attributes) {
                 $this->synchronizeTable($tableName);
                 $updateTable = $GLOBALS['xoopsDB']->prefix($tableName);
                 $joinTable   = $GLOBALS['xoopsDB']->prefix($srcTableName);
-                $sql         = "UPDATE `$updateTable` t1 INNER JOIN `$joinTable` t2 ON t1.post_id = t2.post_id \n" . "SET t1.dohtml = t2.dohtml,  t1.dosmiley = t2.dosmiley, t1.doxcode = t2.doxcode\n" . '  , t1.doimage = t2.doimage, t1.dobr = t2.dobr';
+                $sql         = "UPDATE `$updateTable` t1 INNER JOIN `$joinTable` t2 ON t1.post_id = t2.post_id 
+" . "SET t1.dohtml = t2.dohtml,  t1.dosmiley = t2.dosmiley, t1.doxcode = t2.doxcode
+" . '  , t1.doimage = t2.doimage, t1.dobr = t2.dobr';
                 $this->tableHandler->addToQueue($sql);
             }
         }
@@ -99,15 +112,17 @@ class Migrate extends \Xmf\Database\Migrate
      * Some typical uses include
      *   table and column renames
      *   data conversions
+     *
+     * @return void
      */
     protected function preSyncActions()
     {
         // change 'bb' table prefix to 'newbb'
-        $this->changePrefix();
+      //  $this->changePrefix();
         // columns dohtml, dosmiley, doxcode, doimage and dobr moved between tables as some point
-        $this->moveDoColumns();
+      //  $this->moveDoColumns();
         // Convert IP address columns from int to readable varchar(45) for IPv6
-        $this->convertIPAddresses('newbb_posts', 'poster_ip');
-        $this->convertIPAddresses('newbb_report', 'reporter_ip');
+      //  $this->convertIPAddresses('newbb_posts', 'poster_ip');
+      //  $this->convertIPAddresses('newbb_report', 'reporter_ip');
     }
 }

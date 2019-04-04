@@ -1,7 +1,4 @@
-INSTALL/UNISTALL
-=================
+INSTALLATION
+=============
 
-In order to install the module please do following:
-
-Install Soapbox just like another module
-
+Install just like another XOOPS module

@@ -1,6 +1,4 @@
-<?php
-
-namespace XoopsModules\Soapbox\Common;
+<?php namespace XoopsModules\Soapbox\Common;
 
 /*
  You may not change or alter any portion of this comment or credits
@@ -10,18 +8,20 @@ namespace XoopsModules\Soapbox\Common;
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+*/
 /**
- * Configurator Class
+ * Module: Soapbox
  *
- * @copyright   XOOPS Project (https://xoops.org)
- * @license     http://www.fsf.org/copyleft/gpl.html GNU public license
- * @author      XOOPS Development Team
- * @package     Publisher
- * @since       1.05
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
 
-// require_once dirname(dirname(__DIR__)) . '/include/common.php';
+//require_once dirname(dirname(__DIR__)) . '/include/common.php';
 
 /**
  * Class Configurator
@@ -37,6 +37,7 @@ class Configurator
     public $oldFiles        = [];
     public $oldFolders      = [];
     public $renameTables    = [];
+    public $moduleStats     = [];        
     public $modCopyright;
 
     /**
@@ -44,8 +45,8 @@ class Configurator
      */
     public function __construct()
     {
-        $moduleDirName      = basename(dirname(dirname(__DIR__)));
-        $moduleDirNameUpper = mb_strtoupper($moduleDirName);
+        $moduleDirName = basename(dirname(dirname(__DIR__)));
+        $capsDirName   = strtoupper($moduleDirName);
 
         require_once dirname(dirname(__DIR__)) . '/include/config.php';
         $config = getConfig();
@@ -59,6 +60,8 @@ class Configurator
         $this->oldFiles        = $config->oldFiles;
         $this->oldFolders      = $config->oldFolders;
         $this->renameTables    = $config->renameTables;
+        $this->moduleStats     = $config->moduleStats;
         $this->modCopyright    = $config->modCopyright;
+
     }
 }

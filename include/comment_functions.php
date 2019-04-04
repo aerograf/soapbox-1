@@ -1,37 +1,47 @@
 <?php
 
+/*
+ You may not change or alter any portion of this comment or credits
+ of supporting developers from this source code or any supporting source code
+ which is considered copyrighted (c) material of the original comment or credit authors.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
 /**
  * Module: Soapbox
- * Version: v 1.5
- * Release Date: 25 April 2004
- * Author: hsalazar
- * Licence: GNU
- * @param $art_id
- * @param $total_num
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
-// defined('XOOPS_ROOT_PATH') || die('Restricted access');
-function sb_com_update($art_id, $total_num)
-{
-    //HACK
-    //get soapbox moduleConfig
-    global $xoopsModule;
-    $hModConfig            = xoops_getHandler('config');
-    $soapModuleConfig      = $hModConfig->getConfigList((int)$xoopsModule->getVar('mid'));
-    $globaldisplaycomments = 0;
-    if (isset($soapModuleConfig['globaldisplaycomments'])) {
-        $globaldisplaycomments = $soapModuleConfig['globaldisplaycomments'];
+/**
+ * CommentsUpdate
+ *
+ * @param mixed $itemId
+ * @param mixed $commentCount
+ * @return bool
+ */
+function soapboxCommentsUpdate($itemId, $commentCount) {
+        /** @var \XoopsModules\Soapbox\Helper $helper */
+    $helper = \XoopsModules\Soapbox\Helper::getInstance();
+    if (!$helper->getHandler('Sbvotedata')->updateAll('comments', (int)$commentCount, new \Criteria('lid', (int)$itemId))){
+        return false;
     }
-    if (0 === $globaldisplaycomments) {
-        $db  = \XoopsDatabaseFactory::getDatabaseConnection();
-        $sql = 'UPDATE ' . $db->prefix('sbarticles') . ' SET commentable = ' . (int)$total_num . ' WHERE articleID = ' . (int)$art_id;
-        $db->query($sql);
-    }
+    return true;
 }
 
 /**
- * @param $comment
+ * CommentsApprove
+ *
+ * @param string  $comment
+ * @return void
  */
-function sb_com_approve($comment)
-{
+function soapboxCommentsApprove(&$comment){
     // notification mail here
 }

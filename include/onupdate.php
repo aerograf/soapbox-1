@@ -1,28 +1,36 @@
 <?php
+
 /*
- * You may not change or alter any portion of this comment or credits
- * of supporting developers from this source code or any supporting source code
- * which is considered copyrighted (c) material of the original comment or credit authors.
+ You may not change or alter any portion of this comment or credits
+ of supporting developers from this source code or any supporting source code
+ which is considered copyrighted (c) material of the original comment or credit authors.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+/**
+ * Module: Soapbox
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
 
-/**
- * @copyright    XOOPS Project https://xoops.org/
- * @license      GNU GPL 2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
- * @package
- * @since
- * @author       XOOPS Development Team
- */
 
 use XoopsModules\Soapbox;
 
-if ((!defined('XOOPS_ROOT_PATH')) || !($GLOBALS['xoopsUser'] instanceof \XoopsUser)
-    || !$GLOBALS['xoopsUser']->IsAdmin()) {
+if ((!defined('XOOPS_ROOT_PATH')) || !$GLOBALS['xoopsUser'] instanceof \XoopsUser
+    || !$GLOBALS['xoopsUser']->IsAdmin()
+) {
     exit('Restricted access' . PHP_EOL);
 }
+
+require dirname(__DIR__) . '/preloads/autoloader.php';
 
 /**
  * @param string $tablename
@@ -33,10 +41,12 @@ function tableExists($tablename)
 {
     $result = $GLOBALS['xoopsDB']->queryF("SHOW TABLES LIKE '$tablename'");
 
-    return $GLOBALS['xoopsDB']->getRowsNum($result) > 0;
+    return ($GLOBALS['xoopsDB']->getRowsNum($result) > 0);
 }
 
+
 /**
+ *
  * Prepares system prior to attempting to install module
  * @param \XoopsModule $module {@link XoopsModule}
  *
@@ -44,47 +54,56 @@ function tableExists($tablename)
  */
 function xoops_module_pre_update_soapbox(\XoopsModule $module)
 {
-    /** @var Soapbox\Helper $helper */
-    /** @var Soapbox\Utility $utility */
-    $moduleDirName = basename(dirname(__DIR__));
-    $helper        = Soapbox\Helper::getInstance();
-    $utility       = new Soapbox\Utility();
+    /** @var \XoopsModules\Soapbox\Helper $helper */
+    /** @var \XoopsModules\Soapbox\Utility $utility */
+    $helper       = \XoopsModules\Soapbox\Helper::getInstance();
+    $utility      = new \XoopsModules\Soapbox\Utility();
 
     $xoopsSuccess = $utility::checkVerXoops($module);
     $phpSuccess   = $utility::checkVerPhp($module);
+    
+    $migrator = new \XoopsModules\Soapbox\Common\Migrate();
+    $migrator->synchronizeSchema();
 
+
+    
     return $xoopsSuccess && $phpSuccess;
 }
 
 /**
+ *
  * Performs tasks required during update of the module
  * @param \XoopsModule $module {@link XoopsModule}
- * @param null         $previousVersion
+ * @param null        $previousVersion
+ *
+ * @return bool true if update successful, false if not
  */
+
 function xoops_module_update_soapbox(\XoopsModule $module, $previousVersion = null)
 {
-    global $xoopsDB;
-    require_once dirname(dirname(dirname(__DIR__))) . '/mainfile.php';
-    $moduleDirName      = basename(dirname(__DIR__));
-    $moduleDirNameUpper = mb_strtoupper($moduleDirName);
+    $moduleDirName = basename(dirname(__DIR__));
+    $moduleDirNameUpper = strtoupper($moduleDirName);
 
     /** @var Soapbox\Helper $helper */
     /** @var Soapbox\Utility $utility */
-    /** @var Soapbox\Common\Configurator $configurator */
+   /** @var Soapbox\Common\Configurator $configurator */
     $helper       = Soapbox\Helper::getInstance();
     $utility      = new Soapbox\Utility();
-    $configurator = new Soapbox\Common\Configurator();
+     $configurator = new Soapbox\Common\Configurator();
+      $helper->loadLanguage('common');
+
 
     if ($previousVersion < 240) {
+
         //delete old HTML templates
-        if (count($configurator->{'templateFolders'}) > 0) {
-            foreach ($configurator->{'templateFolders'} as $folder) {
+        if (count($configurator->templateFolders) > 0) {
+            foreach ($configurator->templateFolders as $folder) {
                 $templateFolder = $GLOBALS['xoops']->path('modules/' . $moduleDirName . $folder);
                 if (is_dir($templateFolder)) {
                     $templateList = array_diff(scandir($templateFolder, SCANDIR_SORT_NONE), ['..', '.']);
                     foreach ($templateList as $k => $v) {
-                        $fileInfo = new \SplFileInfo($templateFolder . $v);
-                        if ('html' === $fileInfo->getExtension() && 'index.html' !== $fileInfo->getFilename()) {
+                        $fileInfo = new SplFileInfo($templateFolder . $v);
+                        if ('html' === $fileInfo->getExtension()  && 'index.html' !== $fileInfo->getFilename()) {
                             if (file_exists($templateFolder . $v)) {
                                 unlink($templateFolder . $v);
                             }
@@ -93,6 +112,7 @@ function xoops_module_update_soapbox(\XoopsModule $module, $previousVersion = nu
                 }
             }
         }
+
 
         //  ---  DELETE OLD FILES ---------------
         if (count($configurator->oldFiles) > 0) {
@@ -112,7 +132,7 @@ function xoops_module_update_soapbox(\XoopsModule $module, $previousVersion = nu
             foreach (array_keys($configurator->oldFolders) as $i) {
                 $tempFolder = $GLOBALS['xoops']->path('modules/' . $moduleDirName . $configurator->oldFolders[$i]);
                 /** @var \XoopsObjectHandler $folderHandler */
-                $folderHandler = XoopsFile::getHandler('folder', $tempFolder);
+                $folderHandler   = \XoopsFile::getHandler('folder', $tempFolder);
                 $folderHandler->delete($tempFolder);
             }
         }
@@ -127,7 +147,7 @@ function xoops_module_update_soapbox(\XoopsModule $module, $previousVersion = nu
 
         //  ---  COPY blank.png FILES ---------------
         if (count($configurator->copyBlankFiles) > 0) {
-            $file = dirname(__DIR__) . '/assets/images/blank.png';
+            $file = __DIR__ . '/../assets/images/blank.png';
             foreach (array_keys($configurator->copyBlankFiles) as $i) {
                 $dest = $configurator->copyBlankFiles[$i] . '/blank.png';
                 $utility::copyFile($file, $dest);
@@ -135,7 +155,12 @@ function xoops_module_update_soapbox(\XoopsModule $module, $previousVersion = nu
         }
 
         //delete .html entries from the tpl table
-        $sql = 'DELETE FROM ' . $xoopsDB->prefix('tplfile') . " WHERE `tpl_module` = '" . $module->getVar('dirname', 'n') . "' AND `tpl_file` LIKE '%.html%'";
-        $xoopsDB->queryF($sql);
+        $sql = 'DELETE FROM ' . $GLOBALS['xoopsDB']->prefix('tplfile') . " WHERE `tpl_module` = '" . $module->getVar('dirname', 'n') . "' AND `tpl_file` LIKE '%.html%'";
+        $GLOBALS['xoopsDB']->queryF($sql);
+
+            /** @var \XoopsGroupPermHandler $grouppermHandler */
+        $grouppermHandler = xoops_getHandler('groupperm');
+        return $grouppermHandler->deleteByModule($module->getVar('mid'), 'item_read');
     }
+    return true;
 }

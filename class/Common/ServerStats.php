@@ -1,6 +1,4 @@
-<?php
-
-namespace XoopsModules\Soapbox\Common;
+<?php namespace XoopsModules\Soapbox\Common;
 
 /*
  You may not change or alter any portion of this comment or credits
@@ -10,14 +8,18 @@ namespace XoopsModules\Soapbox\Common;
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
-
+*/
 /**
- * @copyright   XOOPS Project (https://xoops.org)
- * @license     http://www.fsf.org/copyleft/gpl.html GNU public license
- * @author      mamba <mambax7@gmail.com>
- */
-trait ServerStats
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
+ */trait ServerStats
 {
     /**
      * serverStats()
@@ -28,7 +30,7 @@ trait ServerStats
     {
         //mb    $wfdownloads = WfdownloadsWfdownloads::getInstance();
         $moduleDirName      = basename(dirname(dirname(__DIR__)));
-        $moduleDirNameUpper = mb_strtoupper($moduleDirName);
+        $moduleDirNameUpper = strtoupper($moduleDirName);
         xoops_loadLanguage('common', $moduleDirName);
         $html = '';
         //        $sql   = 'SELECT metavalue';
@@ -36,14 +38,19 @@ trait ServerStats
         //        $sql   .= " WHERE metakey='version' LIMIT 1";
         //        $query = $GLOBALS['xoopsDB']->query($sql);
         //        list($meta) = $GLOBALS['xoopsDB']->fetchRow($query);
+
         $html .= '<fieldset>';
         $html .= "<legend style='font-weight: bold; color: #900;'>" . constant('CO_' . $moduleDirNameUpper . '_IMAGEINFO') . '</legend>';
+
         $html .= "<div style='padding: 8px;'>";
-        //        $html .= '<div>' . constant('CO_' . $moduleDirNameUpper . '_METAVERSION') . $meta . "</div>";
+
+        //        $html .= '<div>' . constant('CO_' . $moduleDirNameUpper . '_METAVERSION') . $meta . '</div>';
         //        $html .= "<br>";
         //        $html .= "<br>";
+
         $html .= '<div>' . constant('CO_' . $moduleDirNameUpper . '_SPHPINI') . '</div>';
         $html .= '<ul>';
+
 
         $gdlib = function_exists('gd_info') ? '<span style="color: #008000;">' . constant('CO_' . $moduleDirNameUpper . '_GDON') . '</span>' : '<span style="color: #ff0000;">' . constant('CO_' . $moduleDirNameUpper . '_GDOFF') . '</span>';
         $html  .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_GDLIBSTATUS') . $gdlib;
@@ -53,18 +60,19 @@ trait ServerStats
             }
         }
 
+
         //    $safemode = ini_get('safe_mode') ? constant('CO_' . $moduleDirNameUpper . '_ON') . constant('CO_' . $moduleDirNameUpper . '_SAFEMODEPROBLEMS : constant('CO_' . $moduleDirNameUpper . '_OFF');
         //    $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_SAFEMODESTATUS . $safemode;
 
-        //    $registerglobals = (!ini_get('register_globals')) ? "<span style=\"color: green;\">" . constant('CO_' . $moduleDirNameUpper . '_OFF') . '</span>' : "<span style=\"color: red;\">" . constant('CO_' . $moduleDirNameUpper . '_ON') . '</span>';
+        //    $registerglobals = (!ini_get('register_globals')) ? "<span style=\"color: #008000;\">" . constant('CO_' . $moduleDirNameUpper . '_OFF') . '</span>' : "<span style=\"color: #ff0000;\">" . constant('CO_' . $moduleDirNameUpper . '_ON') . '</span>';
         //    $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_REGISTERGLOBALS . $registerglobals;
 
         $downloads = ini_get('file_uploads') ? '<span style="color: #008000;">' . constant('CO_' . $moduleDirNameUpper . '_ON') . '</span>' : '<span style="color: #ff0000;">' . constant('CO_' . $moduleDirNameUpper . '_OFF') . '</span>';
         $html      .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_SERVERUPLOADSTATUS') . $downloads;
 
-        $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_MAXUPLOADSIZE') . ' <b><span style="color: #0000ff;">' . ini_get('upload_max_filesize') . '</span></b>';
-        $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_MAXPOSTSIZE') . ' <b><span style="color: #0000ff;">' . ini_get('post_max_size') . '</span></b>';
-        $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_MEMORYLIMIT') . ' <b><span style="color: #0000ff;">' . ini_get('memory_limit') . '</span></b>';
+        $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_MAXUPLOADSIZE') . ' <b><span style="color: blue;">' . ini_get('upload_max_filesize') . '</span></b>';
+        $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_MAXPOSTSIZE') . ' <b><span style="color: blue;">' . ini_get('post_max_size') . '</span></b>';
+        $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_MEMORYLIMIT') . ' <b><span style="color: blue;">' . ini_get('memory_limit') . '</span></b>';
         $html .= '</ul>';
         $html .= '<ul>';
         $html .= '<li>' . constant('CO_' . $moduleDirNameUpper . '_SERVERPATH') . ' <b>' . XOOPS_ROOT_PATH . '</b>';

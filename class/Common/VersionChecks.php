@@ -1,6 +1,4 @@
-<?php
-
-namespace XoopsModules\Soapbox\Common;
+<?php namespace XoopsModules\Soapbox\Common;
 
 /*
  You may not change or alter any portion of this comment or credits
@@ -10,34 +8,40 @@ namespace XoopsModules\Soapbox\Common;
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
-
+*/
 /**
- * @copyright   XOOPS Project (https://xoops.org)
- * @license     http://www.fsf.org/copyleft/gpl.html GNU public license
- * @author      mamba <mambax7@gmail.com>
+ * Module: Soapbox
+ *
+ * @category        Module
+ * @package         soapbox
+ * @author          XOOPS Development Team <https://xoops.org>
+ * @copyright       {@link https://xoops.org/ XOOPS Project}
+ * @license         GPL 2.0 or later
+ * @link            https://xoops.org/
+ * @since           1.0.0
  */
 trait VersionChecks
 {
     /**
+     *
      * Verifies XOOPS version meets minimum requirements for this module
      * @static
      * @param \XoopsModule|null $module
      *
-     * @param null|string       $requiredVer
+     * @param null|string  $requiredVer
      * @return bool true if meets requirements, false if not
      */
     public static function checkVerXoops(\XoopsModule $module = null, $requiredVer = null)
     {
         $moduleDirName      = basename(dirname(dirname(__DIR__)));
-        $moduleDirNameUpper = mb_strtoupper($moduleDirName);
+        $moduleDirNameUpper = strtoupper($moduleDirName);
         if (null === $module) {
             $module = \XoopsModule::getByDirname($moduleDirName);
         }
         xoops_loadLanguage('admin', $moduleDirName);
 
         //check for minimum XOOPS version
-        $currentVer = mb_substr(XOOPS_VERSION, 6); // get the numeric part of string
+        $currentVer = substr(XOOPS_VERSION, 6); // get the numeric part of string
         if (null === $requiredVer) {
             $requiredVer = '' . $module->getInfo('min_xoops'); //making sure it's a string
         }
@@ -52,6 +56,7 @@ trait VersionChecks
     }
 
     /**
+     *
      * Verifies PHP version meets minimum requirements for this module
      * @static
      * @param \XoopsModule|null $module
@@ -61,17 +66,15 @@ trait VersionChecks
     public static function checkVerPhp(\XoopsModule $module = null)
     {
         $moduleDirName      = basename(dirname(dirname(__DIR__)));
-        $moduleDirNameUpper = mb_strtoupper($moduleDirName);
-        if (null === $module) {
+        $moduleDirNameUpper = strtoupper($moduleDirName);
+         if (null === $module) {
             $module = \XoopsModule::getByDirname($moduleDirName);
         }
-        xoops_loadLanguage('admin', $moduleDirName);
+        xoops_loadLanguage('admin', $module->dirname());
         // check for minimum PHP version
         $success = true;
-
-        $verNum = PHP_VERSION;
-        $reqVer = &$module->getInfo('min_php');
-
+        $verNum  = PHP_VERSION;
+        $reqVer  = $module->getInfo('min_php');
         if (false !== $reqVer && '' !== $reqVer) {
             if (version_compare($verNum, $reqVer, '<')) {
                 $module->setErrors(sprintf(constant('CO_' . $moduleDirNameUpper . '_ERROR_BAD_PHP'), $reqVer, $verNum));
@@ -81,8 +84,9 @@ trait VersionChecks
 
         return $success;
     }
-
-    /**
+    
+    
+        /**
      *
      * compares current module version with latest GitHub release
      * @static
@@ -107,12 +111,11 @@ trait VersionChecks
                 curl_setopt($curlHandle, CURLOPT_URL, $infoReleasesUrl);
                 curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($curlHandle, CURLOPT_HTTPHEADER, ["User-Agent:Publisher\r\n"]);
+                curl_setopt($curlHandle, CURLOPT_HTTPHEADER, ["User-Agent:Publisher
+"]);
                 $curlReturn = curl_exec($curlHandle);
                 if (false === $curlReturn) {
                     trigger_error(curl_error($curlHandle));
-                } elseif (strpos($curlReturn, 'Not Found')) {
-                    trigger_error('Repository Not Found: ' . $infoReleasesUrl);
                 } else {
                     $file              = json_decode($curlReturn, false);
                     $latestVersionLink = sprintf("https://github.com/$repository/archive/%s.zip", $file ? reset($file)->tag_name : $default);
